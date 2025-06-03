@@ -1,0 +1,29 @@
+services:
+  n8n:
+    image: n8nio/n8n
+    container_name: n8n
+    environment:
+      - DB_TYPE=${DB_TYPE}
+      - DB_POSTGRESDB_HOST=${DB_POSTGRESDB_HOST}
+      - DB_POSTGRESDB_PORT=${DB_POSTGRESDB_PORT}
+      - DB_POSTGRESDB_DATABASE=${DB_POSTGRESDB_DATABASE}
+      - DB_POSTGRESDB_USER=${DB_POSTGRESDB_USER}
+      - DB_POSTGRESDB_PASSWORD=${DB_POSTGRESDB_PASSWORD}
+    ports:
+      - 5678:5678
+    volumes:
+      - ./n8n_data:/root/.n8n
+    depends_on:
+      - n8n_db
+    restart: always
+ 
+  n8n_db:
+    image: postgres:13
+    container_name: n8n_db
+    environment:
+      - POSTGRES_USER=${DB_POSTGRESDB_USER}
+      - POSTGRES_PASSWORD=${DB_POSTGRESDB_PASSWORD}
+      - POSTGRES_DB=${DB_POSTGRESDB_DATABASE}
+    volumes:
+      - ./n8n_db_data:/var/lib/postgresql/data
+    restart: always

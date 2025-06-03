@@ -1,0 +1,100 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "short_lived_token",
+              "value": "PASTE_YOUR_SHORT_TOKEN_HERE"
+            },
+            {
+              "name": "client_secret",
+              "value": "PASTE_YOUR_APP_SECRET_HERE"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "SetToken",
+      "name": "Set Token",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "none",
+        "url": "https://graph.threads.net/access_token",
+        "method": "GET",
+        "queryParameters": [
+          {
+            "name": "grant_type",
+            "value": "th_exchange_token"
+          },
+          {
+            "name": "client_secret",
+            "value": "={{$json[\"client_secret\"]}}"
+          },
+          {
+            "name": "access_token",
+            "value": "={{$json[\"short_lived_token\"]}}"
+          }
+        ],
+        "responseFormat": "json"
+      },
+      "id": "GetLongToken",
+      "name": "Get Long Token",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "url": "https://graph.threads.net/me",
+        "method": "GET",
+        "headers": [
+          {
+            "name": "Authorization",
+            "value": "={{\"Bearer \" + $json[\"access_token\"]}}"
+          }
+        ],
+        "responseFormat": "json"
+      },
+      "id": "GetUserInfo",
+      "name": "Get User Info",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [600, 300]
+    }
+  ],
+  "connections": {
+    "Set Token": {
+      "main": [
+        [
+          {
+            "node": "Get Long Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Long Token": {
+      "main": [
+        [
+          {
+            "node": "Get User Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "name": "Threads Long Token Flow",
+  "trigger": {},
+  "version": 1
+}

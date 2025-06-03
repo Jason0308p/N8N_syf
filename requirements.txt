@@ -1,0 +1,12 @@
+flask
+pandas
+numpy
+requests
+torch
+ipython
+selenium
+beautifulsoup4
+pygsheets
+pandasgui
+playwright
+playwright
